@@ -1,25 +1,22 @@
+let moveMapping = [['w',0,1], ['a',-1,0], ['s',0,-1], ['d',1,0]];
+let playerSpeed = 5;
 await Canvas();
-world.gravity.y = 10;
 
-let ball = new Sprite();
-ball.diameter = 50;
-ball.img = '🤪';
+let player = new Sprite();
+player.w = 30;
+player.h = 75;
 
-let groundA = new Sprite();
-groundA.x = -120;
-groundA.width = 220;
-groundA.rotation = 30;
-groundA.physics = STATIC;
-
-let groundB = new Sprite();
-groundB.x = 120;
-groundB.width = 220;
-groundB.rotation = -30;
-groundB.physics = STATIC;
+function playerMovement(){
+	if (keyIsPressed){
+	let move = moveMapping.findIndex((input) => moveMapping[input][0] = key);
+	// alert(key);
+	// alert(move);
+	player.velocity.x = moveMapping[move][1] * playerSpeed;
+	player.velocity.y = moveMapping[move][2] * playerSpeed;
+	}
+}
 
 q5.update = function () {
 	background('skyblue');
-	text('click to jump!', 0, -50);
-
-	if (mouse.presses()) ball.vel.y = -5;
+	playerMovement();
 };
