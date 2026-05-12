@@ -1,18 +1,31 @@
-let moveMapping = [['w',0,1], ['a',-1,0], ['s',0,-1], ['d',1,0]];
 let playerSpeed = 5;
+let playerImg
 await Canvas();
+function preload() {
+	playerImg = loadImage("images\greenjet.png");
+}
 
-let player = new Sprite();
-player.w = 30;
-player.h = 75;
+function setup() {
+	let player = new Sprite();
+	player.w = 30;
+	player.h = 75;
+	player.img = playerImg;
+}
 
-function playerMovement(){
-	if (keyIsPressed){
-	let move = moveMapping.findIndex((input) => moveMapping[input][0] = key);
-	// alert(key);
-	// alert(move);
-	player.velocity.x = moveMapping[move][1] * playerSpeed;
-	player.velocity.y = moveMapping[move][2] * playerSpeed;
+function playerMovement() {
+	player.velocity.x = 0;
+	player.velocity.y = 0;
+	if (kb.pressing('w')) {
+		player.velocity.y = -1 * playerSpeed;
+	}
+	else if (kb.pressing('s')) {
+		player.velocity.y = 1 * playerSpeed;
+	}
+	if (kb.pressing("a")) {
+		player.velocity.x = -1 * playerSpeed;
+	}
+	else if (kb.pressing("d")) {
+		player.velocity.x = 1 * playerSpeed;
 	}
 }
 
