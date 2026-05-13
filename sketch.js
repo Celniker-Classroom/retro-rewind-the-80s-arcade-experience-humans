@@ -1,12 +1,13 @@
 let playerSpeed = 5;
-let playerImg
-await Canvas();
-function preload() {
-	playerImg = loadImage("images\greenjet.png");
+let playerImg;
+let player;
+q5.preload = function() {
+	playerImg = loadImage("images/greenjet.png");
 }
 
-function setup() {
-	let player = new Sprite();
+q5.setup = async function() {
+	await Canvas();
+	player = new Sprite();
 	player.w = 30;
 	player.h = 75;
 	player.image = playerImg;
@@ -29,7 +30,7 @@ function playerMovement() {
 	}
 }
 
-q5.update = function () {
+q5.draw = function () {
 	background('skyblue');
 	playerMovement();
 };
