@@ -11,8 +11,8 @@ q5.preload = function() {
 	wizardImg = loadImage("images/wizard.png");
 }
 
-q5.setup = function() {
-	Canvas();
+q5.setup = async function() {
+	await Canvas(800, 600);
 	frameRate(60);
 	player = new Sprite();
 	player.w = 80;
@@ -83,7 +83,7 @@ function handleBulletHit(shotBullet, wizard) {
 }
 
 q5.draw = function () {
-	background('skyblue');
+	background(135, 206, 235);
 	playerControls();
 	shootDelay --;
 
@@ -96,7 +96,6 @@ q5.draw = function () {
 	bullet.overlap(wizardGroup, handleBulletHit);
 
 	wizardGroup.forEach(function(wizard) {
-		//this should remove the wizard 5 seconds after being shot so it can fly around crazy for a bit before disappearing
 		if (wizard.isShot && wizard.shotTime && millis() - wizard.shotTime >= 5000) {
 			wizard.remove();
 		}
