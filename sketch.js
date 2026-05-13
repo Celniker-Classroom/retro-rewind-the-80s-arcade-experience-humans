@@ -9,7 +9,7 @@ function setup() {
 	let player = new Sprite();
 	player.w = 30;
 	player.h = 75;
-	player.img = playerImg;
+	player.image = playerImg;
 }
 
 function playerMovement() {
