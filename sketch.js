@@ -11,8 +11,8 @@ q5.preload = function() {
 	wizardImg = loadImage("images/wizard.png");
 }
 
-q5.setup = async function() {
-	await Canvas();
+q5.setup = function() {
+	Canvas();
 	frameRate(60);
 	player = new Sprite();
 	player.w = 80;
@@ -21,6 +21,8 @@ q5.setup = async function() {
 	player.image.scale = 3;
 	player.debug = true;
 	player.rotationLock = true;
+	player.x = width / 2;
+	player.y = height - 100;
 
 	bullet = new Group();
 	bullet.w = 10;
