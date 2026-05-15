@@ -11,6 +11,8 @@ let enemySpawnTimer = 0;
 let wizardGroup;
 let lives = 3;
 let hitCooldown = 0;
+let explosions;
+let explosionImg;
 //also i keep forgeting to put the lets accordingly, if you don't do that it throws an error
 q5.preload = function() {
 	playerImg = loadImage("images/greenjet.png");
@@ -18,6 +20,7 @@ q5.preload = function() {
 	damagejet2 = loadImage("images/damagejet2.png");
 	damagejet3 = loadImage("images/Damagejet3.png");
 	wizardImg = loadImage("images/redwizard.png");
+	explosionImg = loadImage("images/explosion.png");
 }
 
 q5.setup = async function() {
@@ -31,16 +34,29 @@ q5.setup = async function() {
 	player.image.scale = 3;
 	player.debug = true;
 	player.rotationLock = true;
+
 	bullet = new Group();
 	bullet.w = 10;
 	bullet.h = 30;
 	bullet.collider = 'k';
 	wizardGroup = new Group();
-	wizardGroup.w = 80;
-	wizardGroup.h = 75;
+	wizardGroup.debug = true;
+	wizardGroup.w = 70;
+	wizardGroup.h = 70;
 	wizardGroup.image = wizardImg;
 	//idk why but this image is soooo tiny
 	wizardGroup.image.scale=8
+
+	explosions = new Group();
+	explosions.w = 70;
+	explosions.h = 70;
+	explosions.image = explosionImg;
+	explosions.collider = 'static';
+	explosions.layer = 1;
+	explosions.debug = true;
+	explosions.image.scale = 2;
+	explosions.life = 10;
+	explosions.overlaps(wizardGroup);
 }
 
 function playerControls() {
@@ -67,6 +83,11 @@ function playerControls() {
 		shotBullet.collider = 'k';
 	}
 }
+function explosion(x,y){
+	let boom = new explosions.Sprite();
+	boom.x = x;
+	boom.y = y;
+}
 //i just found out that you could use the browser inspect console to find out whats wrong when it goes black
 q5.draw = function () {
 	background('skyblue');
@@ -90,7 +111,7 @@ q5.draw = function () {
 	//code that ai made, spawns enemies often and when shot they fly in a random direction before disappearing
 	if (enemySpawnTimer <= 0) {
 		let enemy = new wizardGroup.Sprite();
-		enemy.x = random(50, width - 50);
+		enemy.x = random(-width/2 + 50,  width/2 - 50);
 		enemy.y = -50;
 		enemy.velocity.y = 2;
 		enemy.collider = 'k';
@@ -101,6 +122,8 @@ q5.draw = function () {
 	bullet.overlap(wizardGroup, function(b, w) {
 		w.velocity.x = random(-15, 15);
 		w.velocity.y = random(-15, 15);
+		w.rotationSpeed = random(-15,15);
+		explosion(w.x,w.y);
 		b.life = 0;
 	});
 	//so that you don't get hit by the same wizard a bunch of times
@@ -109,6 +132,8 @@ q5.draw = function () {
 			lives --;
 			hitCooldown = 60;
 		}
+		w.life = 0;
+		explosion(w.x,w.y)
 	});
 	//replace this with the heart stuff, make the normal hearts be a random broken heart image upon damage
 	fill('black');
