@@ -1,18 +1,28 @@
-let playerSpeed = 5;
+let playerSpeed = 7;
 let playerImg;
+let damagejet1;
+let damagejet2;
+let damagejet3;
+let wizardImg;
 let player;
 let bullet;
-let wizardGroup;
 let shootDelay = 0;
 let enemySpawnTimer = 0;
-
+let wizardGroup;
+let lives = 3;
+let hitCooldown = 0;
+//also i keep forgeting to put the lets accordingly, if you don't do that it throws an error
 q5.preload = function() {
 	playerImg = loadImage("images/greenjet.png");
-	wizardImg = loadImage("images/wizard.png");
+	damagejet1 = loadImage("images/Damagejet1.png");
+	damagejet2 = loadImage("images/damagejet2.png");
+	damagejet3 = loadImage("images/Damagejet3.png");
+	wizardImg = loadImage("images/redwizard.png");
 }
 
 q5.setup = async function() {
-	await Canvas(800, 600);
+	await Canvas();
+	//this weird await function is magical if you change it it turns black
 	frameRate(60);
 	player = new Sprite();
 	player.w = 80;
@@ -21,18 +31,16 @@ q5.setup = async function() {
 	player.image.scale = 3;
 	player.debug = true;
 	player.rotationLock = true;
-	player.x = width / 2;
-	player.y = height - 100;
-
 	bullet = new Group();
 	bullet.w = 10;
 	bullet.h = 30;
 	bullet.collider = 'k';
-
 	wizardGroup = new Group();
 	wizardGroup.w = 80;
-	wizardGroup.h = 80;
-	wizardGroup.collider = 'k';
+	wizardGroup.h = 75;
+	wizardGroup.image = wizardImg;
+	//idk why but this image is soooo tiny
+	wizardGroup.image.scale=8
 }
 
 function playerControls() {
@@ -52,52 +60,58 @@ function playerControls() {
 	}
 	if (kb.pressing("space") && shootDelay < 1){
 		let shotBullet = new bullet.Sprite();
-		shotBullet.velocity.y = -10;
+		shotBullet.velocity.y = -18;
 		shotBullet.x = player.x;
 		shotBullet.y = player.y - player.height/2;
-		shootDelay = 30;
+		shootDelay = 10;
 		shotBullet.collider = 'k';
 	}
 }
-
-//i wont even lie bro i had to use ai for all of this i didnt know how to like make them spawn at intervals and die correctly
-function spawnWizard() {
-	let enemy = new wizardGroup.Sprite();
-	enemy.image = wizardImg;
-	enemy.image.scale = 2;
-	enemy.x = random(50, width - 50);
-	enemy.y = -50;
-	enemy.velocity.y = 2;
-	enemy.debug = false;
-	
-	enemy.isShot = false;
-	enemy.shotTime = null;
-}
-
-function handleBulletHit(shotBullet, wizard) {
-	if (!wizard.isShot) {
-		wizard.isShot = true;
-		wizard.shotTime = millis();
-	}
-	shotBullet.remove();
-}
-
+//i just found out that you could use the browser inspect console to find out whats wrong when it goes black
 q5.draw = function () {
-	background(135, 206, 235);
+	background('skyblue');
 	playerControls();
 	shootDelay --;
-
+	hitCooldown --;
+	//for some reason the image keeps resetting to the original one, so I have to set it every frame
+	//call gordon ramsey because i am cooking up some spaghetti 
+	//as in spaghetti code
+	//get it? 
+	player.image.scale = 3;
+	if (lives === 3) {
+		player.image = playerImg;
+	} else if (lives === 2) {
+		player.image = damagejet1;
+	} else if (lives === 1) {
+		player.image = damagejet2;
+	} else {
+		player.image = damagejet3;
+	};
+	//code that ai made, spawns enemies often and when shot they fly in a random direction before disappearing
 	if (enemySpawnTimer <= 0) {
-		spawnWizard();
-		enemySpawnTimer = 120;
+		let enemy = new wizardGroup.Sprite();
+		enemy.x = random(50, width - 50);
+		enemy.y = -50;
+		enemy.velocity.y = 2;
+		enemy.collider = 'k';
+		enemySpawnTimer = 30;
 	}
 	enemySpawnTimer --;
-
-	bullet.overlap(wizardGroup, handleBulletHit);
-
-	wizardGroup.forEach(function(wizard) {
-		if (wizard.isShot && wizard.shotTime && millis() - wizard.shotTime >= 5000) {
-			wizard.remove();
+	
+	bullet.overlap(wizardGroup, function(b, w) {
+		w.velocity.x = random(-15, 15);
+		w.velocity.y = random(-15, 15);
+		b.life = 0;
+	});
+	//so that you don't get hit by the same wizard a bunch of times
+	player.overlap(wizardGroup, function(p, w) {
+		if (hitCooldown <= 0) {
+			lives --;
+			hitCooldown = 60;
 		}
 	});
+	//replace this with the heart stuff, make the normal hearts be a random broken heart image upon damage
+	fill('black');
+	textSize(20);
+	text('Lives: ' + lives, 10, 30);
 };
