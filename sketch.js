@@ -115,16 +115,28 @@ q5.draw = function () {
 		enemy.y = -50;
 		enemy.velocity.y = 2;
 		enemy.collider = 'k';
+		enemy.dead = false;
 		enemySpawnTimer = 30;
 	}
 	enemySpawnTimer --;
 	
 	bullet.overlap(wizardGroup, function(b, w) {
+		w.dead = true;
 		w.velocity.x = random(-15, 15);
 		w.velocity.y = random(-15, 15);
 		w.rotationSpeed = random(-15,15);
 		explosion(w.x,w.y);
-		b.life = 0;
+		//bulllets will stay if they hit someone because its cool like plinko
+		b.life=60
+		//made it so the wizards don't disappear immediately 
+		w.life = 120;
+	});
+	//super cool code i made that makes the wizards run into each other and explode them
+	wizardGroup.overlap(wizardGroup, function(a, b) {
+		if (a !== b && a.dead && !b.dead) {
+			b.life = 0;
+			explosion(b.x,b.y);
+		}
 	});
 	//so that you don't get hit by the same wizard a bunch of times
 	player.overlap(wizardGroup, function(p, w) {
