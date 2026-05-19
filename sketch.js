@@ -13,6 +13,7 @@ let lives = 3;
 let hitCooldown = 0;
 let explosions;
 let explosionImg;
+let score = 0;
 //also i keep forgeting to put the lets accordingly, if you don't do that it throws an error
 q5.preload = function() {
 	playerImg = loadImage("images/greenjet.png");
@@ -24,7 +25,7 @@ q5.preload = function() {
 }
 
 q5.setup = async function() {
-	await Canvas();
+	await Canvas(400,800);
 	//this weird await function is magical if you change it it turns black
 	frameRate(60);
 	player = new Sprite();
@@ -79,7 +80,7 @@ function playerControls() {
 		shotBullet.velocity.y = -18;
 		shotBullet.x = player.x;
 		shotBullet.y = player.y - player.height/2;
-		shootDelay = 10;
+		shootDelay = 30;
 		shotBullet.collider = 'k';
 	}
 }
@@ -112,7 +113,7 @@ q5.draw = function () {
 	if (enemySpawnTimer <= 0) {
 		let enemy = new wizardGroup.Sprite();
 		enemy.x = random(-width/2 + 50,  width/2 - 50);
-		enemy.y = -50;
+		enemy.y = -400 + wizardGroup.w;
 		enemy.velocity.y = 2;
 		enemy.collider = 'k';
 		enemy.dead = false;
@@ -127,15 +128,17 @@ q5.draw = function () {
 		w.rotationSpeed = random(-15,15);
 		explosion(w.x,w.y);
 		//bulllets will stay if they hit someone because its cool like plinko
-		b.life=60
+		b.life=15
 		//made it so the wizards don't disappear immediately 
-		w.life = 120;
+		w.life = 30;
+		score = score + 5;
 	});
 	//super cool code i made that makes the wizards run into each other and explode them
 	wizardGroup.overlap(wizardGroup, function(a, b) {
 		if (a !== b && a.dead && !b.dead) {
 			b.life = 0;
 			explosion(b.x,b.y);
+			score = score + 10;
 		}
 	});
 	//so that you don't get hit by the same wizard a bunch of times
@@ -150,5 +153,6 @@ q5.draw = function () {
 	//replace this with the heart stuff, make the normal hearts be a random broken heart image upon damage
 	fill('black');
 	textSize(20);
-	text('Lives: ' + lives, 10, 30);
+	text('Lives: ' + lives, -170, -370);
+	text ("Score: " + score, -170, -350);
 };
