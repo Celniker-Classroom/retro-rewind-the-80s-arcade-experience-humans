@@ -14,6 +14,7 @@ let hitCooldown = 0;
 let explosions;
 let explosionImg;
 let score = 0;
+let gameStarted = true;
 //also i keep forgeting to put the lets accordingly, if you don't do that it throws an error
 q5.preload = function() {
 	playerImg = loadImage("images/greenjet.png");
@@ -89,6 +90,11 @@ function explosion(x,y){
 	boom.x = x;
 	boom.y = y;
 }
+function gameEnd(){
+	gameStarted = false;
+	wizardGroup.deleteAll();
+
+}
 //i just found out that you could use the browser inspect console to find out whats wrong when it goes black
 q5.draw = function () {
 	background('skyblue');
@@ -108,6 +114,7 @@ q5.draw = function () {
 		player.image = damagejet2;
 	} else {
 		player.image = damagejet3;
+		gameEnd();
 	};
 	//code that ai made, spawns enemies often and when shot they fly in a random direction before disappearing
 	if (enemySpawnTimer <= 0) {
