@@ -9,12 +9,20 @@ let bullet;
 let shootDelay = 0;
 let enemySpawnTimer = 0;
 let wizardGroup;
-let lives = 3;
+let lives = 1;
 let hitCooldown = 0;
 let explosions;
 let explosionImg;
 let score = 0;
 let gameStarted = true;
+let retryButton;
+let retryImg;
+let retryHovImg;
+let gameBut;
+let overBut;
+let gameImg;
+let overImg;
+let texts;
 //also i keep forgeting to put the lets accordingly, if you don't do that it throws an error
 q5.preload = function() {
 	playerImg = loadImage("images/greenjet.png");
@@ -23,7 +31,13 @@ q5.preload = function() {
 	damagejet3 = loadImage("images/Damagejet3.png");
 	wizardImg = loadImage("images/redwizard.png");
 	explosionImg = loadImage("images/explosion.png");
+	retryImg = loadImage('images/retryButon.png'); //i've always used single quotes theyre easier
+    retryHovImg = loadImage('images/retryHovered.png'); //i wonder why it puts the relative path with a backslash and you have to reverse it
+	gameImg = loadImage('images/GAMEtxt.png');
+	overImg = loadImage('images/OVERtxt.png'); //kms loading every image is so much work
+	
 }
+//i wonder why java needs semicolons with every statement and javascript doesnt
 
 q5.setup = async function() {
 	await Canvas(400,800);
@@ -34,7 +48,7 @@ q5.setup = async function() {
 	player.h = 75;
 	player.image = playerImg;
 	player.image.scale = 3;
-	player.debug = true;
+	player.debug = true; //is this debug thing what's making those colorful boxes on each sprite
 	player.rotationLock = true;
 
 	bullet = new Group();
@@ -59,6 +73,13 @@ q5.setup = async function() {
 	explosions.image.scale = 2;
 	explosions.life = 10;
 	explosions.overlaps(wizardGroup);
+
+	texts = new Group(); //this makes all the text buttons like the game over text images and the retry button
+	texts.w = 64;
+	texts.h = 32;
+	texts.layer = 1;
+	texts.collider = 'k'
+
 }
 
 function playerControls() {
@@ -91,14 +112,38 @@ function explosion(x,y){
 	boom.y = y;
 }
 function gameEnd(){
+	if (gameStarted) {//this stuff SHOULD make the text buttons 
+		let gameBut = new texts.Sprite();
+		gameBut.image = gameImg
+		gameBut.x = -50
+		gameBut.y = -50;
+		gameBut.image.scale = 10
+		let overBut = new texts.Sprite();
+		overBut.image = overImg
+		overBut.x = 50
+		overBut.y = -50;
+		overBut.image.scale = 10
+		let retryButton = new texts.Sprite();
+		retryButton.image = retryImg
+		retryButton.x = 0
+		retryButton.y = 150;
+		retryButton.image.scale = 12
+		//XD you have to try and catch the retry button before it leaves the screen
+	}
+	if (retryButton.mouse.hovering){
+		retryButton.image=retryHovImg
+	} else {
+		retryButton.image=retryImg
+	}
 	gameStarted = false;
-	wizardGroup.deleteAll();
-
+	
 }
 //i just found out that you could use the browser inspect console to find out whats wrong when it goes black
 q5.draw = function () {
 	background('skyblue');
-	playerControls();
+	if (gameStarted){
+	playerControls(); //so now you can only move if the game is going
+	}
 	shootDelay --;
 	hitCooldown --;
 	//for some reason the image keeps resetting to the original one, so I have to set it every frame
@@ -112,12 +157,14 @@ q5.draw = function () {
 		player.image = damagejet1;
 	} else if (lives === 1) {
 		player.image = damagejet2;
+	} else if (lives === 0) {
+		player.image = damagejet3; //i made it so ur able to get hir three times and then explode on the fourth
 	} else {
-		player.image = damagejet3;
+		player.image=explosionImg;
 		gameEnd();
 	};
 	//code that ai made, spawns enemies often and when shot they fly in a random direction before disappearing
-	if (enemySpawnTimer <= 0) {
+	if (enemySpawnTimer <= 0 && gameStarted) {
 		let enemy = new wizardGroup.Sprite();
 		enemy.x = random(-width/2 + 50,  width/2 - 50);
 		enemy.y = -400 + wizardGroup.w;
