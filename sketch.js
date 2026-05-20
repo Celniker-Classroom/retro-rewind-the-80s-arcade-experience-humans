@@ -39,6 +39,15 @@ q5.preload = function() {
 }
 //i wonder why java needs semicolons with every statement and javascript doesnt
 
+/*
+i still think that having the "continue? insert coin" thing
+would be good for the porject because part of the rubric says our game has to be
+fun and addictive.it'd be pretty easy to implement to, it'd just be a version of retrying
+that doesn't reset the score. and maybe we can have a win condition where you win if you get 
+100 points? idk i just really need to get perfect score on this i need an A here i'm so close to an A 
+in the classit'd be pretty easy to 
+*/
+
 q5.setup = async function() {
 	await Canvas(400,800);
 	//this weird await function is magical if you change it it turns black
@@ -50,7 +59,8 @@ q5.setup = async function() {
 	player.image.scale = 3;
 	player.debug = true; //is this debug thing what's making those colorful boxes on each sprite
 	player.rotationLock = true;
-
+	player.x=0
+	player.y=-50 //actually defined the players pos at the beginning
 	bullet = new Group();
 	bullet.w = 10;
 	bullet.h = 30;
@@ -75,8 +85,8 @@ q5.setup = async function() {
 	explosions.overlaps(wizardGroup);
 
 	texts = new Group(); //this makes all the text buttons like the game over text images and the retry button
-	texts.w = 64;
-	texts.h = 32;
+	texts.w//with this width and height the boxes should be less hollow = 640;
+	texts.h = 320;
 	texts.layer = 1;
 	texts.collider = 'k'
 
@@ -113,34 +123,51 @@ function explosion(x,y){
 }
 function gameEnd(){
 	if (gameStarted) {//this stuff SHOULD make the text buttons 
-		let gameBut = new texts.Sprite();
+		gameBut = new texts.Sprite();
 		gameBut.image = gameImg
 		gameBut.x = -50
-		gameBut.y = -50;
+		gameBut.y = -200;
 		gameBut.image.scale = 10
-		let overBut = new texts.Sprite();
+		overBut = new texts.Sprite();
 		overBut.image = overImg
 		overBut.x = 50
-		overBut.y = -50;
-		overBut.image.scale = 10
-		let retryButton = new texts.Sprite();
+		overBut.y = 0;
+		overBut.image.scale = 10;
+		retryButton = new texts.Sprite();
 		retryButton.image = retryImg
-		retryButton.x = 0
-		retryButton.y = 150;
+		retryButton.x = 0 //i changed the positions of all these buttons
+		retryButton.y = -100;
 		retryButton.image.scale = 12
 		//XD you have to try and catch the retry button before it leaves the screen
+		if (retryButton) {
+		console.log('button exists') //the button is working
+		}
+		if (retryButton.mouse){
+        console.log('mouse exists') //this doesn't seem to be logging. the mouse doesn't exist 0.0
+		}//i'm actually serious i have no idea what to do here. the mouse thing doesn't seem to be an actual thing in q5
 	}
-	if (retryButton.mouse.hovering){
-		retryButton.image=retryHovImg
-	} else {
-		retryButton.image=retryImg
+	//i think it's too old and there's no way to check if mouse is hovering over things anymore. it got deprecated
+	//i'm just replacing it and now you have to press R
+	if (!gameStarted) {
+		if (kb.pressing('r')) {
+			lives=3
+			score=0
+			player.x=0
+			player.y=-50  //praying this works
+			texts.deleteAll();
+			wizardGroup.deleteAll();
+			explosions.deleteAll();
+			gameStarted = true;
+			//HALLELUJAH IT WORKED. I AM MR. CODE.
+			return
+		}
 	}
 	gameStarted = false;
-	
 }
+
 //i just found out that you could use the browser inspect console to find out whats wrong when it goes black
 q5.draw = function () {
-	background('skyblue');
+	background('skyblue'); //are we sticking with blue or should we make it black
 	if (gameStarted){
 	playerControls(); //so now you can only move if the game is going
 	}
