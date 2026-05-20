@@ -9,7 +9,7 @@ let bullet;
 let shootDelay = 0;
 let enemySpawnTimer = 0;
 let wizardGroup;
-let lives = 1;
+let lives = 3;
 let hitCooldown = 0;
 let explosions;
 let explosionImg;
@@ -23,6 +23,17 @@ let overBut;
 let gameImg;
 let overImg;
 let texts;
+let hearts;
+let heart1;
+let heart2;
+let heart3;
+let heart4;
+let heartImg;
+let heartChunk1;
+let heartChunk2;
+let heartChunk3;
+let heartholeImg;
+let fireheartImg;
 //also i keep forgeting to put the lets accordingly, if you don't do that it throws an error
 q5.preload = function() {
 	playerImg = loadImage("images/greenjet.png");
@@ -35,6 +46,12 @@ q5.preload = function() {
     retryHovImg = loadImage('images/retryHovered.png'); //i wonder why it puts the relative path with a backslash and you have to reverse it
 	gameImg = loadImage('images/GAMEtxt.png');
 	overImg = loadImage('images/OVERtxt.png'); //kms loading every image is so much work
+	heartImg = loadImage('images/heart.png');
+	heartChunk1 = loadImage('images/heartchunk1.png');
+	heartChunk2 = loadImage('images/heartchunk2.png');
+	heartChunk3 = loadImage('images/heartchunk3.png');
+	heartholeImg = loadImage('images/hearthole.png');
+	fireheartImg = loadImage('images/fireheart.png');
 	
 }
 //i wonder why java needs semicolons with every statement and javascript doesnt
@@ -89,6 +106,27 @@ q5.setup = async function() {
 	texts.h = 320;
 	texts.layer = 1;
 	texts.collider = 'k'
+
+	//making the hearts code for lives!
+	hearts = new Group();
+	hearts.overlaps(wizardGroup)
+	hearts.overlaps(player) 
+	hearts.overlaps(bullet)
+	hearts.w=20;
+	hearts.h=20;
+	hearts.y=150
+	hearts.physics=STATIC; //it took SO LONG to figure out how the colliding works
+	hearts.image=heartImg;
+	hearts.image.scale=1;
+	heart1 = new hearts.Sprite();
+	heart1.x=-175
+	heart2 = new hearts.Sprite(); //i can resize the hearts if needed
+	heart2.x=-145
+	heart3 = new hearts.Sprite();
+	heart3.x=-115
+	heart4 = new hearts.Sprite();
+	heart4.x=-85
+
 
 }
 
@@ -180,14 +218,22 @@ q5.draw = function () {
 	player.image.scale = 3;
 	if (lives === 3) {
 		player.image = playerImg;
+		heart1.image=heartImg
+		heart2.image=heartImg
+		heart3.image=heartImg
+		heart4.image=heartImg
 	} else if (lives === 2) {
 		player.image = damagejet1;
+		heart1.image = heartChunk1;
 	} else if (lives === 1) {
 		player.image = damagejet2;
+		heart2.image = heartholeImg;
 	} else if (lives === 0) {
 		player.image = damagejet3; //i made it so ur able to get hir three times and then explode on the fourth
+		heart3.image = heartChunk2;
 	} else {
 		player.image=explosionImg;
+		heart4.image=fireheartImg;
 		gameEnd();
 	};
 	//code that ai made, spawns enemies often and when shot they fly in a random direction before disappearing
@@ -195,7 +241,7 @@ q5.draw = function () {
 		let enemy = new wizardGroup.Sprite();
 		enemy.x = random(-width/2 + 50,  width/2 - 50);
 		enemy.y = -400 + wizardGroup.w;
-		enemy.velocity.y = 2;
+		enemy.velocity.y = Math.floor(Math.random()*5)+1;
 		enemy.collider = 'k';
 		enemy.dead = false;
 		enemySpawnTimer = 30;
